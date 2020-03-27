@@ -14,3 +14,5 @@ rm index.php
 rm license.txt
 rm readme.html
 rm xmlrpc.php
+
+rm wp-cli.phar
