@@ -3,7 +3,7 @@ curl https://wordpress.org/latest.zip > wp.zip
 
 echo
 echo "\033[0;32m #### Extracting wordpress archive \033[0m"
-unzip wp.zip
+unzip -q wp.zip
 mv wordpress/* ./
 rm -rf wordpress
 rm wp.zip
@@ -18,7 +18,8 @@ echo "define('DB_DIR', __DIR__);" >> wp-config.php
 echo "define('DB_FILE', 'wordpress.db');" >> wp-config.php
 echo "\n//$(cat wp-config-sample.php)" >> wp-config.php
 
-read -p "\nDo you want to set up wordpress site as well? " -n 1 -r
+echo
+read -p "Do you want to set up wordpress site as well? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
