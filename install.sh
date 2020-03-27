@@ -1,11 +1,15 @@
-echo '#### Downloading wordpress latest'
+echo "\033[0;32m #### Downloading wordpress latest \033[0m"
 curl https://wordpress.org/latest.zip > wp.zip
 
-echo '#### Extracting wordpress archive'
-unzip wp.zip ./
+echo
+echo "\033[0;32m #### Extracting wordpress archive \033[0m"
+unzip wp.zip
+mv wordpress/* ../
+rm -rf wordpress
 rm wp.zip
 
-echo '#### Setting up sqlite as wp database'
+echo
+echo "\033[0;32m #### Setting up sqlite as wp database \033[0m"
 touch wordpress.db
 mv db.php wp-content/
 
