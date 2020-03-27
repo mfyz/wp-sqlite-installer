@@ -13,6 +13,7 @@ echo "\033[0;32m #### Setting up sqlite as wp database \033[0m"
 touch wordpress.db
 mv db.php wp-content/
 # set up and modify wp-config
-mv wp-config-sample.php wp-config.php
+echo "<?php\n" >> wp-config.php
 echo "define('DB_DIR', __DIR__);" >> wp-config.php
 echo "define('DB_FILE', 'wordpress.db');" >> wp-config.php
+echo "\n//$(cat wp-config-sample.php)" >> wp-config.php
