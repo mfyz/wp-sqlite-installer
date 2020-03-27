@@ -18,11 +18,11 @@ echo "define('DB_DIR', __DIR__);" >> wp-config.php
 echo "define('DB_FILE', 'wordpress.db');" >> wp-config.php
 echo "\n//$(cat wp-config-sample.php)" >> wp-config.php
 
-read -p "Do you want to set up wordpress site as well? " -n 1 -r
+read -p "\nDo you want to set up wordpress site as well? " -n 1 -r
 echo
 if [[ $REPLY =~ ^[Yy]$ ]]
 then
     sh ./configure-wp.sh
 fi
 
-echo "\nAll done! You can use ./run.sh to start your wordpress server\n"
+echo "\n\nAll done! You can use ./run.sh to start your wordpress server\n"

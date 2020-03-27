@@ -12,7 +12,7 @@ php wp-cli.phar core install\
 
 echo "\n\033[0;32m #### Tweaking wordpress settings \033[0m"
 php wp-cli.phar rewrite structure '/%postname%/' --hard
-php wp-cli.phar wp option update page_for_posts 10
+php wp-cli.phar option update page_for_posts 10
 
 # echo "\n\033[0;32m #### Installing and activating plugins \033[0m"
 # php wp-cli.phar plugin install kirki --activate
