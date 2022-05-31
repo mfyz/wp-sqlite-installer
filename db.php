@@ -5,8 +5,8 @@
  * Author: Evan Mattson
  * Author URI: https://aaemnnost.tv
  * Plugin URI: https://github.com/aaemnnosttv/wp-sqlite-db
- * Version: 1.0
- * Requires PHP: 5.4
+ * Version: 1.2.0
+ * Requires PHP: 5.6
  *
  * This file must be placed in wp-content/db.php.
  * WordPress loads this file automatically.
@@ -16,6 +16,8 @@
 
 namespace WP_SQLite_DB {
 
+    use DateTime;
+    use DateInterval;
     use PDO;
     use PDOException;
 
@@ -466,17 +468,17 @@ HTML
             $interval = $this->deriveInterval($interval);
             switch (strtolower($date)) {
                 case "curdate()":
-                    $objDate = new Datetime($this->curdate());
+                    $objDate = new DateTime($this->curdate());
                     $objDate->add(new DateInterval($interval));
                     $formatted = $objDate->format("Y-m-d");
                     break;
                 case "now()":
-                    $objDate = new Datetime($this->now());
+                    $objDate = new DateTime($this->now());
                     $objDate->add(new DateInterval($interval));
                     $formatted = $objDate->format("Y-m-d H:i:s");
                     break;
                 default:
-                    $objDate = new Datetime($date);
+                    $objDate = new DateTime($date);
                     $objDate->add(new DateInterval($interval));
                     $formatted = $objDate->format("Y-m-d H:i:s");
             }
@@ -502,17 +504,17 @@ HTML
             $interval = $this->deriveInterval($interval);
             switch (strtolower($date)) {
                 case "curdate()":
-                    $objDate = new Datetime($this->curdate());
+                    $objDate = new DateTime($this->curdate());
                     $objDate->sub(new DateInterval($interval));
                     $returnval = $objDate->format("Y-m-d");
                     break;
                 case "now()":
-                    $objDate = new Datetime($this->now());
+                    $objDate = new DateTime($this->now());
                     $objDate->sub(new DateInterval($interval));
                     $returnval = $objDate->format("Y-m-d H:i:s");
                     break;
                 default:
-                    $objDate = new Datetime($date);
+                    $objDate = new DateTime($date);
                     $objDate->sub(new DateInterval($interval));
                     $returnval = $objDate->format("Y-m-d H:i:s");
             }
@@ -886,9 +888,6 @@ HTML
          *
          * This function compares two dates value and returns the difference.
          *
-         * PHP 5.3.2 has a serious bug in DateTime::diff(). So if users' PHP is that version,
-         * we don't use that function. See https://bugs.php.net/bug.php?id=51184.
-         *
          * @param string start
          * @param string end
          *
@@ -896,19 +895,11 @@ HTML
          */
         public function datediff($start, $end)
         {
-            if (version_compare(PHP_VERSION, '5.3.2', '==')) {
-                $start_date = strtotime($start);
-                $end_date = strtotime($end);
-                $interval = floor(($start_date - $end_date) / (3600 * 24));
+			$start_date = new DateTime($start);
+			$end_date = new DateTime($end);
+			$interval = $end_date->diff($start_date, false);
 
-                return $interval;
-            } else {
-                $start_date = new DateTime($start);
-                $end_date = new DateTime($end);
-                $interval = $end_date->diff($start_date, false);
-
-                return $interval->format('%r%a');
-            }
+			return $interval->format('%r%a');
         }
 
         /**
@@ -927,7 +918,7 @@ HTML
         public function locate($substr, $str, $pos = 0)
         {
             if (! extension_loaded('mbstring')) {
-                if (($val = stros($str, $substr, $pos)) !== false) {
+                if (($val = strpos($str, $substr, $pos)) !== false) {
                     return $val + 1;
                 } else {
                     return 0;
@@ -1325,13 +1316,12 @@ HTML
          * @param string $statement full SQL statement string
          *
          * @param int $mode
-         * @param null $arg3
-         * @param array $ctorargs
+         * @param array $fetch_mode_args
          *
          * @return mixed according to the query type
          * @see PDO::query()
          */
-        public function query($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, $arg3 = null, array $ctorargs = [])
+        public function query($statement, $mode = PDO::ATTR_DEFAULT_FETCH_MODE, ...$fetch_mode_args)
         {
             $this->flush();
 
@@ -1824,10 +1814,10 @@ HTML
             $param = trim($param);
 
             //remove the quotes at the end and the beginning
-            if (in_array($param{strlen($param) - 1}, ["'", '"'])) {
+            if (in_array($param[strlen($param) - 1], ["'", '"'])) {
                 $param = substr($param, 0, -1);//end
             }
-            if (in_array($param{0}, ["'", '"'])) {
+            if (in_array($param[0], ["'", '"'])) {
                 $param = substr($param, 1); //start
             }
             //$this->extracted_variables[] = $param;
@@ -3475,6 +3465,8 @@ HTML
 
                         return;
                     } else {
+                        $ins_array_assoc = [];
+
                         if (preg_match('/^\((.*)\)\\s*VALUES\\s*\((.*)\)$/im', $insert_data, $match_2)) {
                             $col_array = explode(',', $match_2[1]);
                             $ins_array = explode(',', $match_2[2]);

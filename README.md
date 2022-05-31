@@ -36,3 +36,9 @@ Installs wordpress with default port and creates and admin user (with password: 
 ```
 
 Basically reerts everything (deletes wp, db, and leave the core scripts).
+
+
+## References
+
+SQLite integration (db.sql) is from https://github.com/aaemnnosttv/wp-sqlite-db
+
